@@ -1,3 +1,40 @@
+<?php require 'fonctions.php' ;
+$erreurs =[];
+$nom=$_POST['nom'] ?? '';
+$email=$_POST['email'] ?? '';
+$message=$_POST['message'] ?? '';
+$sucess=false;
+
+if($_SERVER['REQUEST_METHOD']=='POST'){
+
+    $nom=nettoyer($_POST['nom'] ?? "");
+    $email=nettoyer($_POST['email'] ?? "");
+    $message=nettoyer($_POST['message'] ?? "");
+    if(!champ_requis($nom)){
+        $erreurs['nom']="Nom obligatoire";
+    }
+    if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+        $erreurs['email']="email invalide";
+    }
+    if(!champ_requis($message)){
+        $erreurs['message']="Message obligatoire obligatoire";
+    }
+    if(empty($erreurs)){
+        $sucess=true;
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -524,6 +561,7 @@
                 flex-direction: column;
                 gap: 10px;
             }
+            
         }
 
         @media (max-width: 768px) {
@@ -632,6 +670,7 @@
             outline: none;
             transition: 0.3s;
         }
+        
 
         /* FOCUS ANIMATION */
         .contact-form input:focus,
@@ -694,16 +733,23 @@
         }
 
         .section-divider {
-            width: 0;
+            width: 80%;
             height: 2px;
             margin: 80px auto;
             background: linear-gradient(to right, #39ff14, #8a2be2);
-            transition: width 1s ease;
+            animation: dividerAppear 1.5s ease forwards;
         }
-
-        .section-divider.show {
-            width: 80%;
+ @keyframes dividerAppear {
+            from{
+                transform:scaleX(0);
+                opacity:0;
+            }
+            to{
+                transform:scaleX(1);
+                opacity:1;
+            }
         }
+        
 
         h2 {
             margin-bottom: 30px;
@@ -717,33 +763,7 @@
             flex-direction: column;
         }
 
-        .form input,
-        .form textarea,
-        .form select {
-            margin: 10px 0;
-            padding: 12px;
-            border: 1px solid #333;
-            background: #111;
-            color: white;
-            border-radius: 5px;
-        }
-
-        .form textarea {
-            height: 120px;
-            resize: none;
-        }
-
-        /* BUTTON */
-        .form button {
-            margin-top: 15px;
-            padding: 12px;
-            border: none;
-            background: linear-gradient(45deg, #00ff88, #a855f7);
-            color: black;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 5px;
-        }
+        
 
         /* SEARCH */
         #search {
@@ -785,47 +805,124 @@
             }
         }
 
-        .search-bar {
-            display: flex;
-            justify-content: center;
-            margin: 50px auto;
-            width: 100%;
-            max-width: 400px;
+        
+        .actif {
+            color : #00f;
+            font-weight: bold;
+            border-bottom: 2px solid #00f;
         }
+        .footer {
+    background: #0b0b0f;
+    color: #fff;
+    padding: 60px 20px 20px;
+    border-top: 2px solid #7f5af0;
+}
 
-        .search-bar input {
-            flex: 1;
-            padding: 12px;
-            border-radius: 25px 0 0 25px;
-            border: 2px solid #8a2be2;
-            outline: none;
-            background: transparent;
-            color: white;
-        }
+.footer-container {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
+}
 
-        .search-bar button {
-            padding: 12px 20px;
-            border-radius: 0 25px 25px 0;
-            border: 2px solid #8a2be2;
-            background: #8a2be2;
-            color: white;
-            cursor: pointer;
-        }
+.footer-section {
+    flex: 1;
+    min-width: 250px;
+}
+
+.footer-section h2 {
+    color: #7f5af0;
+    margin-bottom: 10px;
+}
+
+.footer-section h3 {
+    color: #2ecc71;
+    margin-bottom: 15px;
+}
+
+.footer-section p {
+    color: #ccc;
+    line-height: 1.6;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 10px;
+}
+
+.footer-section ul li a {
+    text-decoration: none;
+    color: #ccc;
+    transition: 0.3s;
+}
+
+.footer-section ul li a:hover {
+    color: #2ecc71;
+    padding-left: 5px;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 40px;
+    border-top: 1px solid #222;
+    padding-top: 15px;
+    color: #888;
+    font-size: 14px;
+}
+/* 📱 Mobile */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+    }
+
+    .footer-section {
+        min-width: 100%;
+    }
+
+    .footer-section ul {
+        padding: 0;
+    }
+}
+
+/* 📲 Très petits écrans */
+@media (max-width: 480px) {
+    .footer {
+        padding: 40px 15px 15px;
+    }
+
+    .footer-section h2 {
+        font-size: 20px;
+    }
+
+    .footer-section h3 {
+        font-size: 16px;
+    }
+
+    .footer-bottom {
+        font-size: 12px;
+    }
+}
+
+/* 💻 Tablette */
+@media (max-width: 992px) {
+    .footer-container {
+        justify-content: center;
+    }
+}
     </style>
 </head>
 
 <body>
-
-    <nav>
-        <h3>Portfolio.</h3>
-        <div>
-            <a href="#">Home</a>
-            <a href="about.html">About</a>
-            <a href="projects.html">Projets</a>
-            <a href="contact.html">Contact</a>
-        </div>
-        <span class="toggle" onclick="toggleMode()">🌙</span>
-    </nav>
+ <?php require 'composants/navigation.php'; ?>
+    
 
     <section class="hero">
         <div class="hero-text">
@@ -836,7 +933,7 @@
                 <a href="contact.html" class="btn btn-outline">Contacte moi</a>
             </div>
         </div>
-        <img src="images/image0.png">
+        <img src="images/image0 (14).jpeg">
     </section>
     <div class="section-divider"></div>
     <section class="about">
@@ -1064,33 +1161,8 @@
 
     <div class="section-divider"></div>
     <!-- ===== PROJECT SEARCH ===== -->
-    <section class="section">
-        <form class="search-bar" action="search.php" method="GET">
-            <input type="text" name="q" placeholder="Rechercher un projet..." required>
-            <button type="submit">🔍</button>
-        </form>
-    </section>
-    <section class="section">
-        <h2>Demande de projet</h2>
-
-        <form class="form">
-            <input type="text" placeholder="Nom:" required>
-            <input type="email" placeholder=" Email:" required>
-
-            <input type="text" placeholder=" Titre de Project :" required>
-
-            <textarea placeholder="Decris ton projet (features, budget, durée...)" required></textarea>
-
-            <select required>
-                <option value=""> Type de Projet </option>
-                <option>Website</option>
-                <option>Mobile App</option>
-                <option>Backend API</option>
-            </select>
-
-            <button type="submit">Envoyer la requete</button>
-        </form>
-    </section>
+    
+    
 
     <div class="section-divider"></div>
 
@@ -1103,16 +1175,25 @@
             <h2>Contact</h2>
 
             <form class="contact-form">
-                <input type="text" placeholder="Name">
-                <input type="email" placeholder="Email">
-                <textarea placeholder="Message"></textarea>
+                <input type="text" name="nom" placeholder="Nom" value=" <?= $nom  ?>">
+                <p style="color:red"><?= $erreurs['nom'] ?? ""?></p>
+
+                <input type="email"  name="email" placeholder="Email"  value=" <?=$email ?>">
+                <p style="color:red"><?= $erreurs['email'] ?? ""?></p>
+
+                <textarea placeholder="Message" name="message"> <?= $message?></textarea>
+                <p style="color:red"><?= $erreurs['message'] ?? ""?></p>
 
                 <button type="submit">envoyer</button>
             </form>
-
-        </div>
+             <?php if ($sucess) : ?>
+              <p style="color:green">Message envoyé</p>
+              <?php endif; ?>
+              
+             </div>
     </section>
-
+     
+<?php require 'composants/piedpage.php'; ?>
     <script>
         function toggleMode() {
             document.body.classList.toggle("light")
@@ -1125,11 +1206,7 @@
                 if (top < window.innerHeight - 50) { el.classList.add('show'); }
             });
         });
-        document.querySelectorAll('.section-divider').forEach(el => {
-            const top = el.getBoundingClientRect().top;
-            if (top < window.innerHeight - 50) { el.classList.add('show'); }
-        });
-
+        
 
     </script>
 

@@ -1,3 +1,4 @@
+<?php require 'fonctions.php' ; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,7 +12,7 @@
         body {
             margin: 0;
             font-family: 'Poppins', sans-serif;
-            background: #0b0f1a;
+            background: #030303;
             color: white;
             overflow-x: hidden;
         }
@@ -233,50 +234,173 @@
             border-radius: 50%;
             box-shadow: 0 0 10px #ff7a00;
         }
-
+.actif {
+            color : #00f;
+            font-weight: bold;
+            border-bottom: 2px solid #00f;
+        }
         /* NAVBAR */
-        .navbar {
+        
+
+       
+    
+
+         nav {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             padding: 20px 50px;
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
         }
 
-        /* LOGO */
-        .logo {
-            color: #f1f5f1;
-        }
-
-        /* MENU */
         nav a {
-            margin-left: 20px;
+            color: var(--text);
             text-decoration: none;
-            color: white;
-            transition: 0.3s;
+            margin: 0 10px;
         }
 
+        .toggle {
+            cursor: pointer;
+
+        }
         nav a:hover,
         nav a.active {
             color: #7c3aed;
+            text-decoration: none;
         }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: sans-serif;
+        }
+        /* ===== FOOTER BASE ===== */
+.footer {
+    background: #0b0b0f;
+    color: #fff;
+    padding: 60px 20px 20px;
+    border-top: 2px solid #7f5af0;
+    box-shadow: 0 -5px 20px rgba(127, 90, 240, 0.2);
+}
+
+/* Container */
+.footer-container {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+/* Sections */
+.footer-section {
+    flex: 1;
+    min-width: 250px;
+}
+
+/* Titres */
+.footer-section h2 {
+    color: #7f5af0;
+    margin-bottom: 10px;
+}
+
+.footer-section h3 {
+    color: #2ecc71;
+    margin-bottom: 15px;
+}
+
+/* Texte */
+.footer-section p {
+    color: #ccc;
+    line-height: 1.6;
+}
+
+/* Liste */
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 10px;
+}
+
+/* Liens */
+.footer-section ul li a {
+    text-decoration: none;
+    color: #ccc;
+    transition: 0.3s;
+}
+
+.footer-section ul li a:hover {
+    color: #2ecc71;
+    padding-left: 5px;
+}
+
+/* Bas du footer */
+.footer-bottom {
+    text-align: center;
+    margin-top: 40px;
+    border-top: 1px solid #222;
+    padding-top: 15px;
+    color: #888;
+    font-size: 14px;
+}
+
+/* ===== RESPONSIVE ===== */
+
+/* 📱 Mobile */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+    }
+
+    .footer-section {
+        min-width: 100%;
+    }
+
+    .footer-section ul {
+        padding: 0;
+    }
+}
+
+/* 📲 Très petits écrans */
+@media (max-width: 480px) {
+    .footer {
+        padding: 40px 15px 15px;
+    }
+
+    .footer-section h2 {
+        font-size: 20px;
+    }
+
+    .footer-section h3 {
+        font-size: 16px;
+    }
+
+    .footer-bottom {
+        font-size: 12px;
+    }
+}
+
+/* 💻 Tablette */
+@media (max-width: 992px) {
+    .footer-container {
+        justify-content: center;
+    }
+}
+
+        
     </style>
 </head>
 
 <body>
     <header class="navbar">
-        <h2 class="logo">Portfolio</h2>
-
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="about.html" class="active">About</a>
-            <a href="projects.html">Projects</a>
-            <a href="index.html#contact">Contact</a>
-        </nav>
+        
+       <?php require 'composants/navigation.php'; ?>
     </header>
     <!-- 🔥 ABOUT -->
     <section class="contact about container">
@@ -394,6 +518,7 @@
         </div>
 
     </section>
+    <?php require 'composants/piedpage.php'; ?>
     <script>
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
