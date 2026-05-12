@@ -411,7 +411,49 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
         justify-content: center;
     }
 }
+/* ===== VERSION MOBILE UNIQUEMENT ===== */
 
+@media(max-width:768px){
+
+    /* bouton hamburger */
+    .hamburger{
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        cursor: pointer;
+    }
+
+    .hamburger span{
+        width: 28px;
+        height: 3px;
+        background: white;
+        border-radius: 5px;
+    }
+
+    /* menu mobile caché */
+    .nav-links{
+        display: none;
+
+        position: absolute;
+        top: 80px;
+        left: 0;
+
+        width: 100%;
+        background: #111;
+
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+
+        padding: 25px 0;
+    }
+
+    /* menu affiché après clic */
+    .nav-links.active{
+        display: flex;
+    }
+
+}
     </style>
 </head>
 
@@ -467,7 +509,14 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
 
     </section>
     <?php require 'composants/piedpage.php'; ?>
+<script>
+        const hamburger = document.getElementById("hamburger");
+        const navLinks = document.getElementById("navLinks");
 
+       hamburger.addEventListener("click", () => {
+       navLinks.classList.toggle("active");
+      });
+    </script>
 </body>
 
 </html>
