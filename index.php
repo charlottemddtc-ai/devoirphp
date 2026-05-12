@@ -1,15 +1,20 @@
+
 <?php require 'fonctions.php' ;
+//tableau qui contiendra les erreurs
 $erreurs =[];
+//recuperation des valeurs envoyées,s'il y'a pas de valeur on met rien
 $nom=$_POST['nom'] ?? '';
 $email=$_POST['email'] ?? '';
 $message=$_POST['message'] ?? '';
+//variable pour savoir si l'envoie est reussi
 $sucess=false;
-
+//le traitement commence apres l'envoie
 if($_SERVER['REQUEST_METHOD']=='POST'){
-
+//nettoyage
     $nom=nettoyer($_POST['nom'] ?? "");
     $email=nettoyer($_POST['email'] ?? "");
     $message=nettoyer($_POST['message'] ?? "");
+//verification des champs s'ils sont vide ou pas
     if(!champ_requis($nom)){
         $erreurs['nom']="Nom obligatoire";
     }
@@ -19,6 +24,7 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
     if(!champ_requis($message)){
         $erreurs['message']="Message obligatoire obligatoire";
     }
+//s'il y'a pas d'erreurs
     if(empty($erreurs)){
         $sucess=true;
     }
@@ -77,6 +83,7 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
         nav {
             display: flex;
             justify-content: space-between;
+            align-items:center;
             padding: 20px 50px;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
@@ -917,49 +924,9 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
         justify-content: center;
     }
 }
-/* ===== VERSION MOBILE UNIQUEMENT ===== */
+ 
 
-@media(max-width:768px){
-
-    /* bouton hamburger */
-    .hamburger{
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-        cursor: pointer;
-    }
-
-    .hamburger span{
-        width: 28px;
-        height: 3px;
-        background: white;
-        border-radius: 5px;
-    }
-
-    /* menu mobile caché */
-    .nav-links{
-        display: none;
-
-        position: absolute;
-        top: 80px;
-        left: 0;
-
-        width: 100%;
-        background: #111;
-
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-
-        padding: 25px 0;
-    }
-
-    /* menu affiché après clic */
-    .nav-links.active{
-        display: flex;
-    }
-
-}
+    
     </style>
 </head>
 
@@ -1014,7 +981,7 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
                     </div>
                 </div>
 
-                <a href="about.html" class="learn-btn">Apprends plus</a>
+                <a href="about.php" class="learn-btn">Apprends plus</a>
 
             </div>
 
@@ -1250,12 +1217,6 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
             });
         });
         
-        const hamburger = document.getElementById("hamburger");
-        const navLinks = document.getElementById("navLinks");
-
-       hamburger.addEventListener("click", () => {
-       navLinks.classList.toggle("active");
-      });
     
 
     </script>

@@ -2,12 +2,7 @@
   ?>
  <nav>
         <h3>Portfolio.</h3>
-        <div class="hamburger" id ="hamburger">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-    
+        
         <div class="nav-links" id ="navLinks">
             <a href="index.php" <?php if ($page_courante == 'index.php') echo 'class="actif"'; ?>
             >Home</a>

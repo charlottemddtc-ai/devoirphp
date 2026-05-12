@@ -1,5 +1,6 @@
-<?php require 'fonctions.php' ;
 
+<?php require 'fonctions.php' ;
+//tableau contenant les projets
 $projects= [
     [
         'titre' =>'E-Commerce Platform',
@@ -29,19 +30,28 @@ $projects= [
     
  
 ];
+//Recuperation du mot cle sans les espaces
 $mot_cle=trim($_GET['q'] ?? "");
+//le tableau ou on va stocké les resultats
 $resultats=[];
+//si l'utilisateur met un mot clé
 if($mot_cle !==""){
+//parcoure tous les projets
     foreach($projects as $p){
+//recherche du mot dans le titre ou dans la description
         if(stripos($p['titre'], $mot_cle) !==false || 
            stripos($p['description'], $mot_cle) !==false ){
+//ajoute le projet trouve dans resultats
             $resultats[]=$p;
            }
     }
 }
+//recupere les données envoyées ,si aucune n'est envoyées on met rien
 $demande=$_POST ??[];
+//tableau erreurs
 $erreurs=[];
 $sucess=false;
+//tableau qui stocke les données du formulaire
  $demande=[
     'nom'=>"",
     'email'=>"",
@@ -49,13 +59,15 @@ $sucess=false;
     'description'=>"",
     'type_de_projet'=>""
  ];
+ //le traitement commence apres l'envoie
  if($_SERVER['REQUEST_METHOD']=='POST'){
-
+//nettoyage
     $demande['nom']=nettoyer($_POST['nom'] ?? "");
     $demande['email']=nettoyer($_POST['email'] ?? "");
     $demande['titre_projet']=nettoyer($_POST['titre_projet'] ?? "");
      $demande['description']=nettoyer($_POST['description'] ?? "");
       $demande['type_de_projet']=nettoyer($_POST['type_de_projet'] ?? "");
+//veification des champs
     if(!champ_requis($demande['nom'])){
         $erreurs['nom']="Nom obligatoire";
     }
@@ -527,49 +539,16 @@ $sucess=false;
     }
 }
 
-/* ===== VERSION MOBILE UNIQUEMENT ===== */
+@keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
 
-@media(max-width:768px){
-
-    /* bouton hamburger */
-    .hamburger{
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-        cursor: pointer;
-    }
-
-    .hamburger span{
-        width: 28px;
-        height: 3px;
-        background: white;
-        border-radius: 5px;
-    }
-
-    /* menu mobile caché */
-    .nav-links{
-        display: none;
-
-        position: absolute;
-        top: 80px;
-        left: 0;
-
-        width: 100%;
-        background: #111;
-
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-
-        padding: 25px 0;
-    }
-
-    /* menu affiché après clic */
-    .nav-links.active{
-        display: flex;
-    }
-
-}
+            to {
+                opacity: 1;
+            }
+        }
 
     </style>
 </head>
@@ -697,12 +676,11 @@ $sucess=false;
 
     <?php require 'composants/piedpage.php'; ?>
     <script>
-        const hamburger = document.getElementById("hamburger");
-        const navLinks = document.getElementById("navLinks");
-
-       hamburger.addEventListener("click", () => {
-       navLinks.classList.toggle("active");
-      });
+        
+      function toggleMode() {
+            document.body.classList.toggle("light")
+        }
+        const elements = document.querySelectorAll('.fade-up');
     </script>
 
 </body>

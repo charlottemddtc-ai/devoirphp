@@ -1,13 +1,15 @@
-<?php require 'fonctions.php' ; 
 
+<?php require 'fonctions.php' ; 
+//le tableau qui contiendra les erreurs
 $erreurs =[];
 $sucess=false;
-
+//le traitement commence apres l'envoie
 if($_SERVER['REQUEST_METHOD']=='POST'){
-
+//nettoyage
     $nom=nettoyer($_POST['nom'] ?? "");
     $email=nettoyer($_POST['email'] ?? "");
     $message=nettoyer($_POST['message'] ?? "");
+//validation des champs
     if(!champ_requis($nom)){
         $erreurs['nom']="Nom obligatoire";
     }
@@ -411,49 +413,16 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
         justify-content: center;
     }
 }
-/* ===== VERSION MOBILE UNIQUEMENT ===== */
+@keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
 
-@media(max-width:768px){
-
-    /* bouton hamburger */
-    .hamburger{
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-        cursor: pointer;
-    }
-
-    .hamburger span{
-        width: 28px;
-        height: 3px;
-        background: white;
-        border-radius: 5px;
-    }
-
-    /* menu mobile caché */
-    .nav-links{
-        display: none;
-
-        position: absolute;
-        top: 80px;
-        left: 0;
-
-        width: 100%;
-        background: #111;
-
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-
-        padding: 25px 0;
-    }
-
-    /* menu affiché après clic */
-    .nav-links.active{
-        display: flex;
-    }
-
-}
+            to {
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 
@@ -516,6 +485,10 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
        hamburger.addEventListener("click", () => {
        navLinks.classList.toggle("active");
       });
+      function toggleMode() {
+            document.body.classList.toggle("light")
+        }
+        const elements = document.querySelectorAll('.fade-up');
     </script>
 </body>
 
