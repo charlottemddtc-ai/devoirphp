@@ -1,28 +1,46 @@
 
-<?php require 'fonctions.php' ; 
-//le tableau qui contiendra les erreurs
-$erreurs =[];
-$sucess=false;
-//le traitement commence apres l'envoie
-if($_SERVER['REQUEST_METHOD']=='POST'){
-//nettoyage
-    $nom=nettoyer($_POST['nom'] ?? "");
-    $email=nettoyer($_POST['email'] ?? "");
-    $message=nettoyer($_POST['message'] ?? "");
-//validation des champs
-    if(!champ_requis($nom)){
-        $erreurs['nom']="Nom obligatoire";
-    }
-    if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
-        $erreurs['email']="email invalige";
-    }
-    if(!champ_requis($message)){
-        $erreurs['message']="Message obligatoire obligatoire";
-    }
-    if(empty($erreurs)){
-        $sucess=true;
-    }
+<?php 
+require_once 'fonctions.php' ; 
+ require_once 'config/connexion.php' ; 
 
+?>
+<?php
+//le tableau qui contiendra les erreurs
+enregistrerVisite($db, 'contact.php');
+
+$erreur = null;
+$succes = null;
+
+// ==========================================
+// TRAITEMENT DU FORMULAIRE DE CONTACT (POST)
+// ==========================================
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Protection de sécurité CSRF obligatoire
+    verifierTokenCSRF($_POST['csrf_token'] ?? '');
+
+    // Nettoyage des espaces vides
+    $nom = trim($_POST['nom'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $message = trim($_POST['message'] ?? '');
+
+    // Validation des données (Reprise de ta Partie 2)
+    if (!empty($nom) && !empty($email) && !empty($message)) {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            
+            // INSERTION SÉCURISÉE EN BDD (Requête préparée contre les injections SQL)
+            $stmt = $db->prepare("INSERT INTO messages_contact (nom, email, message) VALUES (?, ?, ?)");
+            $stmt->execute([$nom, $email, $message]);
+            
+            $succes = "Votre message a bien été envoyé avec succès !";
+            
+            // Optionnel : On vide les variables pour vider le formulaire après un succès
+            $nom = $email = $message = "";
+        } else {
+            $erreur = "L'adresse email saisie n'est pas valide.";
+        }
+    } else {
+        $erreur = "Tous les champs sont obligatoires.";
+    }
 }
 
 
@@ -449,11 +467,17 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
                     <div class="card green">Offre d'emploi</div>
                 </div>
             </div>
-
+            <?php if ($succes): ?>
+            <p style="color: green; font-weight: bold;"><?= e($succes) ?></p>
+        <?php endif; ?>
+        
+        <?php if ($erreur): ?>
+            <p style="color: red; font-weight: bold;"><?= e($erreur) ?></p>
+        <?php endif; ?>
             <!-- RIGHT -->
             <div class="contact-right">
                 <form>
-
+                  <input type="hidden" name="csrf_token" value="<?= genererTokenCSRF() ?>">
                     <input type="text" placeholder="Name">
                     <input type="email" placeholder="Email">
                     <textarea placeholder="Message"></textarea>

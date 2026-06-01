@@ -1,0 +1,6 @@
+
+//empecher d'envoyer les identifiants de connexion sur github
+
+config/connection.php
+images/projects/*
+!.gitignore

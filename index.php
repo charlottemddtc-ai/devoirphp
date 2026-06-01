@@ -1,5 +1,9 @@
-
-<?php require 'fonctions.php' ;
+<?php 
+require_once 'fonctions.php' ; 
+ require_once 'config/connexion.php' ; 
+enregistrerVisite($db,basename($_SERVER['PHP_SELF']));
+?>
+<?php 
 //tableau qui contiendra les erreurs
 $erreurs =[];
 //recuperation des valeurs envoyées,s'il y'a pas de valeur on met rien
@@ -943,7 +947,7 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
                 <a href="contact.php" class="btn btn-outline">Contacte moi</a>
             </div>
         </div>
-        <img src="images/image0 (14).jpeg">
+        <img src="images/projects/image0 (14).jpeg">
     </section>
     <div class="section-divider"></div>
     <section class="about">
@@ -952,7 +956,7 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
 
             <!-- IMAGE -->
             <div class="about-img">
-                <img src="images/image0 (12).jpeg" alt="me">
+                <img src="images/projects/image0 (12).jpeg" alt="me">
             </div>
 
             <!-- TEXT -->
@@ -1185,12 +1189,15 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
             <h2>Contact</h2>
 
             <form class="contact-form">
+                <label for="Nom">Nom:</label>
                 <input type="text" name="nom" placeholder="Nom" value=" <?= $nom  ?>">
                 <p style="color:red"><?= $erreurs['nom'] ?? ""?></p>
-
+    
+                <label for="Email">Email:</label>
                 <input type="email"  name="email" placeholder="Email"  value=" <?=$email ?>">
                 <p style="color:red"><?= $erreurs['email'] ?? ""?></p>
 
+                <label for="Message">Message:</label>
                 <textarea placeholder="Message" name="message"> <?= $message?></textarea>
                 <p style="color:red"><?= $erreurs['message'] ?? ""?></p>
 

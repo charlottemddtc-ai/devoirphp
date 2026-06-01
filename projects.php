@@ -1,95 +1,66 @@
+<?php
 
-<?php require 'fonctions.php' ;
-//tableau contenant les projets
-$projects= [
-    [
-        'titre' =>'E-Commerce Platform',
-        'description'=> 'Boutique en ligne avec payement intégre',
-        'technologies' =>['React','Node'],
-         'image' =>'images/image0 (11).jpeg',
-    ],
-    [
-        'titre' =>'platforme pour algriculteur',
-        'description'=> 'Aide à savoir quand est ce que yaura la pluie',
-        'technologies' =>['CSS','HTML'],
-         'image' =>'images/image1 (1).jpeg',
-    ],
-    [
-        'titre' =>'Aplication pour un startup',
-        'description'=> 'Application personnalisé au gout du client',
-        'technologies' =>['React','Tailwind'],
-         'image' =>'images/image2.jpeg',
-    ],
-     [
-        'titre' =>'Requete client',
-        'description'=> 'Une technologie basée sur des requetes client-serveur',
-        'technologies' =>['SQL','C'],
-         'image' =>'images/image4.jpeg',
+require_once 'config/connexion.php';
+require_once 'fonctions.php';
 
-    ]
-    
- 
-];
-//Recuperation du mot cle sans les espaces
-$mot_cle=trim($_GET['q'] ?? "");
-//le tableau ou on va stocké les resultats
-$resultats=[];
-//si l'utilisateur met un mot clé
-if($mot_cle !==""){
-//parcoure tous les projets
-    foreach($projects as $p){
-//recherche du mot dans le titre ou dans la description
-        if(stripos($p['titre'], $mot_cle) !==false || 
-           stripos($p['description'], $mot_cle) !==false ){
-//ajoute le projet trouve dans resultats
-            $resultats[]=$p;
-           }
+// Enregistrement de la visite
+enregistrerVisite($db, 'projects.php'); 
+
+$erreur_demande = null;
+$succes_demande = null;
+
+// Initialisation des variables pour les attributs value
+$nom = $email = $type_projet = $description = $budget = "";
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_demande'])) {
+    verifierTokenCSRF($_POST['csrf_token'] ?? '');
+
+    $nom = trim($_POST['nom'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $type_projet = trim($_POST['type_projet'] ?? '');
+    $description = trim($_POST['description'] ?? '');
+    $budget = trim($_POST['budget'] ?? ''); // Récupération du budget
+
+    // Validation des champs obligatoires (budget est optionnel)
+    if (!empty($nom) && !empty($email) && !empty($type_projet) && !empty($description)) {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            
+            // L'id, lu, et date_demande sont gérés automatiquement par MySQL !
+            $stmt = $db->prepare("INSERT INTO demandes_projet (nom, email, type_projet, description, budget) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$nom, $email, $type_projet, $description, $budget]);
+            
+            $succes_demande = "Votre demande de projet a bien été enregistrée !";
+            // On vide les champs après succès
+            $nom = $email = $type_projet = $description = $budget = "";
+        } else {
+            $erreur_demande = "L'adresse email n'est pas valide.";
+        }
+    } else {
+        $erreur_demande = "Veuillez remplir tous les champs obligatoires (*).";
     }
 }
-//recupere les données envoyées ,si aucune n'est envoyées on met rien
-$demande=$_POST ??[];
-//tableau erreurs
-$erreurs=[];
-$sucess=false;
-//tableau qui stocke les données du formulaire
- $demande=[
-    'nom'=>"",
-    'email'=>"",
-    'titre_projet'=>"",
-    'description'=>"",
-    'type_de_projet'=>""
- ];
- //le traitement commence apres l'envoie
- if($_SERVER['REQUEST_METHOD']=='POST'){
-//nettoyage
-    $demande['nom']=nettoyer($_POST['nom'] ?? "");
-    $demande['email']=nettoyer($_POST['email'] ?? "");
-    $demande['titre_projet']=nettoyer($_POST['titre_projet'] ?? "");
-     $demande['description']=nettoyer($_POST['description'] ?? "");
-      $demande['type_de_projet']=nettoyer($_POST['type_de_projet'] ?? "");
-//veification des champs
-    if(!champ_requis($demande['nom'])){
-        $erreurs['nom']="Nom obligatoire";
-    }
-    if(!filter_var($demande['email'], FILTER_VALIDATE_EMAIL)){
-        $erreurs['email']="email invalige";
-    }
-    if(!champ_requis($demande['titre_projet'])){
-        $erreurs['titre_projet']="Titre  obligatoire";
-    }
-    if(!champ_requis($demande['description'])){
-        $erreurs['description']="description  obligatoire";
-    }
-    if(!champ_requis($demande['type_de_projet'])){
-        $erreurs['type_de_projet']="type  obligatoire";
-    }
-    if(empty($erreurs)){
-        $sucess=true;
-    }
 
+// ==========================================
+// GESTION DE LA RECHERCHE ET LISTE DES PROJETS (GET)
+// ==========================================
+$recherche = $_GET['q'] ?? '';
+
+if (!empty($recherche)) {
+    // Recherche filtrée (Requête préparée obligatoire)
+    $stmt = $db->prepare("SELECT * FROM projects WHERE titre LIKE ? OR technologies LIKE ? ORDER BY date_creation DESC");
+    $terme = "%" . $recherche . "%";
+    $stmt->execute([$terme, $terme]);
+    $projects = $stmt->fetchAll();
+} else {
+    // Liste de TOUS les projets par défaut
+    $stmt = $db->query("SELECT * FROM projects ORDER BY date_creation DESC");
+    $projects = $stmt->fetchAll();
 }
-
 ?>
+
+ 
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -556,125 +527,104 @@ $sucess=false;
 <body>
 
     <?php require 'composants/navigation.php'; ?>
-    <section class="projects-section">
+   <section class="projects-section">
         <h2>Tous les Projets</h2>
 
-         <section class="section">
-        <form class="search-bar" action="" method="GET">
-            <input type="text" name="q" placeholder="Rechercher un projet..." value=" <?= $mot_cle ?>">
-            <button type="submit">🔍</button>
-        </form>
-    
-        <?php if(!$mot_cle !=="") ;?>
-          <h2>resultats pour:<?= htmlspecialchars($mot_cle) ?> </h2>
-          <div class="projects">
-             <?php foreach ($resultats as $p ) :?> 
-
-                 <div class="project-card">
-                      <img src="<?= htmlspecialchars($p['image'] ?? "") ?>">
-                       <div class="project-content">
-                        <h3><?= htmlspecialchars($p['titre']) ?? "" ?></h3>
-                        <p><?= htmlspecialchars($p['description']) ?? "" ?></p>
-                        <div class="buttons">
-                            <button class="btn-dark">Code</button>
-                            <button class="btn-orange">Demo</button>
-                        </div>
-                    </div>
-        
-                 </div>
-
-                        
-             <?php endforeach ;?>
-         </div>
-        
-           
-        
-        
-            
-
-  
-    </section>
-        <div class="projects">
-
-            <!-- PROJECT 1 -->
-            
+        <section class="section">
+            <form class="search-bar" action="" method="GET">
+                <input type="text" name="q" placeholder="Rechercher un projet..." value="<?= e($recherche) ?>">
+                <button type="submit">🔍</button>
                 
-         
-           <?php foreach ($projects as $projet):?>
-                   
-                <div class="project-card">
-                    <img src="<?= htmlspecialchars($projet['image'] ?? "") ?>">
-                    <div class="project-content">
-                        <h3><?= htmlspecialchars($projet['titre']) ?? "" ?></h3>
-                        <p><?= htmlspecialchars($projet['description']) ?? "" ?></p>
-                          
-                        <div class="tech">
-                            <?php foreach ($projet['technologies'] as $tech): ?>
-                            <span><?= htmlspecialchars($tech) ?></span>
-                            <?php endforeach ; ?>
-                        </div>
+                <?php if (!empty($recherche)) : ?>
+                    <a href="projects.php">Renitialiser</a>
+                <?php endif; ?>
+            </form>
+        </section>
 
-                        <div class="buttons">
-                            <button class="btn-dark">Code</button>
-                            <button class="btn-orange">Demo</button>
+        <?php if (!empty($recherche)) : ?>
+            <h2>resultats pour : <?= e($recherche) ?></h2>
+        <?php endif; ?>
+
+        <div class="projects">
+            <?php if (empty($projects)) : ?>
+                <p class="no-projects" style="color: #bbb; font-style: italic; grid-column: 1/-1; text-align: center;">
+                    Aucun projet à afficher pour le moment.
+                </p>
+            <?php else : ?>
+             
+                <?php foreach ($projects as $p) : ?>
+                    <div class="project-card">
+                        <img src="images/projects/<?= !empty($p['image']) ? e($p['image']) : 'default.png' ?>" alt="<?= e($p['titre']) ?>">
+                        
+                        <div class="project-content">
+                            <h3><?= e($p['titre']) ?></h3>
+                            <p><?= e($p['description']) ?></p>
+                            
+                            <div class="buttons">
+                                <button class="btn-dark">Code</button>
+                                <?php if (!empty($p['lien'])) : ?>
+                                    <a href="<?= e($p['lien']) ?>" target="_blank" class="btn-orange" style="text-decoration:none; text-align:center; display:inline-block; line-height:initial;">Demo</a>
+                                <?php else : ?>
+                                    <button class="btn-orange" disabled>Demo</button>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
-                </div>
-            <?php endforeach ; ?>
-            
-           
-
-           
-
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
     </section>
+
     <section class="contact-section">
-      <div class="contact-container">
-        <h2>Demande de projet</h2>
-         <p class="subtitle">Tu as une idée ? Décris ton projet </p>
-        <form class="contact-form" method="POST">
+        <div class="contact-container">
+            <h2>Demande de projet</h2>
+            <p class="subtitle">Tu as une idée ? Décris ton projet</p>
 
-         <div class="input-group">
-            <input type="text" placeholder="Nom:" name="nom" value=" <?=htmlspecialchars($demande['nom'])  ?> " >
-            <p class="error"><?= $erreurs['nom']  ?? "" ?></p>
-         </div>
-         <div class="input-group">
-            <input type="email" placeholder= "Email:" name="email" value=" <?= $demande['email'] ?? ''?>" >
-            <p class="error"><?= $erreurs['email']  ?? "" ?></p>
-         </div>
-         <div class="input-group">
-            <input type="text" placeholder=" Titre de Project :" name="titre_projet" value=" <?= htmlspecialchars(trim($demande['titre_projet'] ?? '')) ?>" >
-            <p class="error"><?= $erreurs['titre_projet']  ?? "" ?></p>
-         </div>
-         <div class="input-group">
-            <textarea placeholder="Decris ton projet (features, budget, durée...)" name="description"><?=htmlspecialchars($demande['description'] ?? '') ?></textarea>
-             <p class="error"><?= $erreurs['description']  ?? "" ?></p>
-          </div>
-        <div class="form-bottom">
-            <select  name="type_de_projet">
-                <option value=""> Type de Projet </option>
-                <option value="website" <?= ($demande['type_de_projet'] ?? '' )==='website'? 'selected' :''?>>Website</option>
-                <option value="mobile app" <?= ($demande['type_de_projet']?? '' )==='mobile app'? 'selected' :''?>>>Mobile App</option>
-                <option value="Backend API" <?=( $demande['type_de_projet']  ?? '')==='Backend API'? 'selected' :''?>>>Backend API</option>
-            </select>
-          
-
-            <button type="submit">Envoyer la requete</button>
-            </div>
-         </form>
-         <?php if ($sucess): ?>
-            <p class="success">Demande envoyé</p>
-            <p><strong>Nom:</strong><?= $demande['nom']?> </p>
-            <p><strong>email:</strong><?= $demande['email']?> </p>
-            <p><strong>Titre:</strong><?= $demande['titre_projet']?> </p>
-            <p><strong>Description:</strong><?= $demande['description']?> </p>
-            <p><strong>type:</strong><?= $demande['type_de_projet']?> </p>
+            <?php if ($succes_demande) : ?>
+                <p style="color: green; font-weight: bold;"><?= e($succes_demande) ?></p>
             <?php endif; ?>
-     </div>
+            
+            <?php if ($erreur_demande) : ?>
+                <p style="color: red; font-weight: bold;"><?= e($erreur_demande) ?></p>
+            <?php endif; ?>
 
+            <form class="contact-form" action="" method="POST">
+
+                <input type="hidden" name="csrf_token" value="<?= genererTokenCSRF() ?>">
+                <input type="hidden" name="action_demande" value="1">
+
+                <div class="input-group">
+                    <input type="text" placeholder="Nom:" name="nom" value="<?= e($nom) ?>" required>
+                </div>
+
+                <div class="input-group">
+                    <input type="email" placeholder="Email:" name="email" value="<?= e($email) ?>" required>
+                </div>
+
+                
+                <div class="input-group">
+                    <input type="text" placeholder="Budget estimé en FCFA (Optionnel) :" name="budget" value="<?= e($budget) ?>">
+                </div>
+
+                <div class="input-group">
+                    <textarea placeholder="Description de tes besoins..." name="description" rows="5" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #ccc;" required><?= e($description) ?></textarea>
+                </div>
+
+                <button type="submit" class="btn-orange" style="margin-top: 15px; border: none; cursor: pointer; padding: 12px 25px;">
+                    Envoyer la demande
+                </button>
+                
+            </form>
+        </div>
     </section>
+            
+           
+
+
+
 
     <?php require 'composants/piedpage.php'; ?>
+
     <script>
         
       function toggleMode() {

@@ -1,5 +1,9 @@
 
-<?php require 'fonctions.php' ; ?>
+<?php 
+require_once 'fonctions.php' ; 
+ require_once 'config/connexion.php' ; 
+enregistrerVisite($db,basename($_SERVER['PHP_SELF']));
+?>
 <!DOCTYPE html>
 <html lang="en">
 
