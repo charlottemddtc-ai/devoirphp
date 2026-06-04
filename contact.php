@@ -1,5 +1,6 @@
 
 <?php 
+session_start();
 require_once 'fonctions.php' ; 
  require_once 'config/connexion.php' ; 
 
@@ -22,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nom = trim($_POST['nom'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $message = trim($_POST['message'] ?? '');
-
+    
     // Validation des données (Reprise de ta Partie 2)
     if (!empty($nom) && !empty($email) && !empty($message)) {
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -476,11 +477,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
             <!-- RIGHT -->
             <div class="contact-right">
-                <form>
+                <form method="POST" action="">
                   <input type="hidden" name="csrf_token" value="<?= genererTokenCSRF() ?>">
-                    <input type="text" placeholder="Name">
-                    <input type="email" placeholder="Email">
-                    <textarea placeholder="Message"></textarea>
+                    <input type="text" name="nom" placeholder="Name">
+                    <input type="email" placeholder="Email" name="email">
+                    <textarea placeholder="Message" name="message"></textarea>
 
                     <div class="checkbox">
                         <input type="checkbox">

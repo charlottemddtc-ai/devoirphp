@@ -25,9 +25,10 @@ function genererTokenCSRF() {
 }
 //verification du token CSRF
 function verifierTokenCSRF(string $token): bool {
-   if(isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token)) {
+   if(!isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $token)) {
       die('Token CSRF invalide');
    }
+   return true;
 }
 //journalisation des visites
 function enregistrerVisite($db,$nom_page){
@@ -51,7 +52,7 @@ function verifierAuthentification(){
  }
 
  function nettoyer(string $valeur): string {
-    return !htmlspecialchars(trim($valeur));
+    return htmlspecialchars(trim($valeur));
  }
 
 

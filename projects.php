@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 require_once 'config/connexion.php';
 require_once 'fonctions.php';
 
@@ -17,12 +17,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_demande'])) {
 
     $nom = trim($_POST['nom'] ?? '');
     $email = trim($_POST['email'] ?? '');
-    $type_projet = trim($_POST['type_projet'] ?? '');
+    
     $description = trim($_POST['description'] ?? '');
     $budget = trim($_POST['budget'] ?? ''); // Récupération du budget
 
     // Validation des champs obligatoires (budget est optionnel)
-    if (!empty($nom) && !empty($email) && !empty($type_projet) && !empty($description)) {
+    if (!empty($nom) && !empty($email) && !empty($budget) && !empty($description)) {
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             
             // L'id, lu, et date_demande sont gérés automatiquement par MySQL !

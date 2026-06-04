@@ -1,7 +1,9 @@
 <?php 
+session_start();
 require_once 'fonctions.php' ; 
  require_once 'config/connexion.php' ; 
 enregistrerVisite($db,basename($_SERVER['PHP_SELF']));
+
 ?>
 <?php 
 //tableau qui contiendra les erreurs
@@ -14,10 +16,13 @@ $message=$_POST['message'] ?? '';
 $sucess=false;
 //le traitement commence apres l'envoie
 if($_SERVER['REQUEST_METHOD']=='POST'){
+   
+    
 //nettoyage
-    $nom=nettoyer($_POST['nom'] ?? "");
-    $email=nettoyer($_POST['email'] ?? "");
-    $message=nettoyer($_POST['message'] ?? "");
+    $nom=nettoyer($_POST['nom']);
+     
+    $email=nettoyer($_POST['email'] );
+    $message=nettoyer($_POST['message'] );
 //verification des champs s'ils sont vide ou pas
     if(!champ_requis($nom)){
         $erreurs['nom']="Nom obligatoire";
@@ -28,9 +33,18 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
     if(!champ_requis($message)){
         $erreurs['message']="Message obligatoire obligatoire";
     }
+    
 //s'il y'a pas d'erreurs
     if(empty($erreurs)){
+        $sql="INSERT INTO messages_contact (nom,email,message,lu,date_envoi) VALUES (?,?,?,?,NOW())";
+        $stmt =$db->prepare($sql);
+        
+        $stmt->execute([$nom,$email,$message,0]);
+        
         $sucess=true;
+        $nom="";
+        $email="";
+        $message="";
     }
 
 }
@@ -1098,7 +1112,7 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
 
             <!-- CARD -->
             <div class="project-card">
-                <img src="images/image0 (11).jpeg">
+                <img src="images/projects/image0 (11).jpeg">
 
                 <div class="project-content">
                     <h3>E-Commerce Platforme</h3>
@@ -1119,7 +1133,7 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
 
             <!-- DUPLIQUE POUR FAIRE 8 -->
             <div class="project-card">
-                <img src="images/image1 (1).jpeg">
+                <img src="images/projects/image1 (1).jpeg">
                 <div class="project-content">
                     <h3>Platform pour algriculteur</h3>
                     <p>Aide à savoir quand est ce que y'aura la pluie.</p>
@@ -1135,7 +1149,7 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
             </div>
 
             <div class="project-card">
-                <img src="images/image2.jpeg">
+                <img src="images/projects/image2.jpeg">
                 <div class="project-content">
                     <h3>Site pour un startup</h3>
                     <p>Site personnalisé au gout du client.</p>
@@ -1151,7 +1165,7 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
             </div>
 
             <div class="project-card">
-                <img src="images/image4.jpeg">
+                <img src="images/projects/image4.jpeg">
                 <div class="project-content">
                     <h3>Requete client </h3>
                     <p>Une technologie basée sur des requetes client-serveur.</p>
@@ -1188,13 +1202,14 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
 
             <h2>Contact</h2>
 
-            <form class="contact-form">
+            <form class="contact-form" method="POST" action="">
+             <input type="hidden" name="csrf_token" value="<?= genererTokenCSRF() ?>">
                 <label for="Nom">Nom:</label>
                 <input type="text" name="nom" placeholder="Nom" value=" <?= $nom  ?>">
                 <p style="color:red"><?= $erreurs['nom'] ?? ""?></p>
     
                 <label for="Email">Email:</label>
-                <input type="email"  name="email" placeholder="Email"  value=" <?=$email ?>">
+                <input type="email"  name="email"   value=" <?=$email ?>">
                 <p style="color:red"><?= $erreurs['email'] ?? ""?></p>
 
                 <label for="Message">Message:</label>
